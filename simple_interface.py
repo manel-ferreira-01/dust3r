@@ -60,4 +60,5 @@ conf = np.concatenate([p[m] for p, m in zip(confs, mask)])
 
 np.savetxt("./output/out.csv",np.hstack((pts, col, conf)), delimiter=",")
 
-
+for i in range(0,len(cams2world)):
+    np.savetxt("./output/"+str(i)+".csv", to_numpy(cams2world[i]))
