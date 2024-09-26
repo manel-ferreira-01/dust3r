@@ -1,6 +1,7 @@
 build docker:
 
 cd docker
+
 bash run.sh --with-cuda --model_name="DUSt3R_ViTLarge_BaseDecoder_512_dpt"
 
 
