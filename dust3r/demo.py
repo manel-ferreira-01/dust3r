@@ -128,8 +128,10 @@ def get_3D_model_from_scene(outdir, silent, scene, min_conf_thr=3, as_pointcloud
     pts3d = to_numpy(scene.get_pts3d())
     scene.min_conf_thr = float(scene.conf_trf(torch.tensor(min_conf_thr)))
     msk = to_numpy(scene.get_masks())
-    return _convert_scene_output_to_glb(outdir, rgbimg, pts3d, msk, focals, cams2world, as_pointcloud=as_pointcloud,
-                                        transparent_cams=transparent_cams, cam_size=cam_size, silent=silent)
+    
+    return pts3d, cams2world
+    #return _convert_scene_output_to_glb(outdir, rgbimg, pts3d, msk, focals, cams2world, as_pointcloud=as_pointcloud,
+    #                                    transparent_cams=transparent_cams, cam_size=cam_size, silent=silent)
 
 
 def get_reconstructed_scene(outdir, model, device, silent, image_size, filelist, schedule, niter, min_conf_thr,
@@ -158,7 +160,7 @@ def get_reconstructed_scene(outdir, model, device, silent, image_size, filelist,
     if mode == GlobalAlignerMode.PointCloudOptimizer:
         loss = scene.compute_global_alignment(init='mst', niter=niter, schedule=schedule, lr=lr)
 
-    outfile = get_3D_model_from_scene(outdir, silent, scene, min_conf_thr, as_pointcloud, mask_sky,
+    pts3d, cams2world = get_3D_model_from_scene(outdir, silent, scene, min_conf_thr, as_pointcloud, mask_sky,
                                       clean_depth, transparent_cams, cam_size)
 
     # also return rgb, depth and confidence imgs
@@ -179,7 +181,8 @@ def get_reconstructed_scene(outdir, model, device, silent, image_size, filelist,
         imgs.append(rgb(depths[i]))
         imgs.append(rgb(confs[i]))
 
-    return scene, outfile, imgs
+    #return scene, outfile, imgs
+    return scene, pts3d, rgbimg, cams2world, confs
 
 
 def set_scenegraph_options(inputfiles, winsize, refid, scenegraph_type):
