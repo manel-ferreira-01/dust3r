@@ -29,28 +29,11 @@ device = "cpu"
 filelist = "./images_in"
 
 
-##TODO: make these the default ones inside the function
-silent = False
-image_size = 512
-schedule = "linear" # or "cosine"
-niter = 300 # number of iters
-min_conf_thr = 3
-as_pointcloud = True
-mask_sky = False
-clean_depth = True
-transparent_cams = False
-cam_size = 0.05
-scenegraph_type = "complete"
-winsize = 1
-refid = 0
-
 # TODO: THIS NEEDS TO BE LAUNCHED AS SOON AS THE CONTAINER STARTS
 model = AsymmetricCroCo3DStereo.from_pretrained("./docker/files/checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth").to(device)
 
 # Get the 3D model from the scene - one function, full pipeline
-scene, pts3d, rgbimg, cams2world, confs = get_reconstructed_scene(outdir, model, device, silent, image_size, filelist, schedule, niter, min_conf_thr,
-                            as_pointcloud, mask_sky, clean_depth, transparent_cams, cam_size,
-                            scenegraph_type, winsize, refid)
+scene, pts3d, rgbimg, cams2world, confs = get_reconstructed_scene(outdir, model, filelist, device=device)
 
 ## Save the output to a CSV file
 mask = to_numpy(scene.get_masks())
