@@ -8,6 +8,7 @@ services:
       dockerfile: cuda.Dockerfile 
     ports:
       - "7860:7860"
+      - "8061:8061"
     environment:
       - DEVICE=cuda
       - MODEL=${MODEL:-DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth}

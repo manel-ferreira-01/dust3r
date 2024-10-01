@@ -6,6 +6,7 @@ services:
       dockerfile: cpu.Dockerfile 
     ports:
       - "7860:7860"
+      - "8061:8061"
     volumes:
       - ./files/checkpoints:/dust3r/checkpoints
     environment:
