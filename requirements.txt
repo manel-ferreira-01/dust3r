@@ -11,3 +11,7 @@ trimesh
 tensorboard
 pyglet<2
 huggingface-hub[torch]>=0.22
+
+grpcio==1.35.0
+grpcio-reflection==1.35.0
+protobuf==3.14.0

@@ -6,8 +6,7 @@ import generic_box_pb2
 import generic_box_pb2_grpc
 import utils
 
-import yoloService as ys
-from ultralytics import YOLO
+import simple_interface as si
 
 class ServiceImpl(generic_box_pb2_grpc.GenericBoxServiceServicer):
 
@@ -24,9 +23,8 @@ class ServiceImpl(generic_box_pb2_grpc.GenericBoxServiceServicer):
                               as described in the process method
 
         """
-        self.__model = YOLO("yolov8n.pt")
 
-    def predict(self, request: generic_box_pb2.Data, context):
+    def Dust3r(self, request: generic_box_pb2.Data, context):
         """Processes a given ImageWithPoses request
 
         It expects that a process function was already registered
@@ -46,31 +44,9 @@ class ServiceImpl(generic_box_pb2_grpc.GenericBoxServiceServicer):
         """
         try:
             file = request.file
-            model = self.__model
-            return ys.predict(file,model)
+            return si.GRPC_Interface(file)
         except:
             logging.exception(f'''[ERRO IN PREDICT]''')
-            return generic_box_pb2.Empty()
-    
-    def track(self, request: generic_box_pb2.Data, context):
-
-        try:
-            file = request.file
-            model = self.__model
-            return ys.track(file,model)
-        except:
-            logging.exception(f'''[ERRO IN TRACK]''')
-            return generic_box_pb2.Empty()
-    
-    def plot(self, request: generic_box_pb2.PlotInfo, context):
-
-        try:
-            img = request.img.file
-            data = request.file.file
-            model = self.__model
-            return ys.plot(img,data,model)
-        except:
-            logging.exception(f'''[ERRO IN PLOT]''')
             return generic_box_pb2.Empty()
     
 
