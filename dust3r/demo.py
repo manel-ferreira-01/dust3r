@@ -134,9 +134,23 @@ def get_3D_model_from_scene(outdir, silent, scene, min_conf_thr=3, as_pointcloud
     #                                    transparent_cams=transparent_cams, cam_size=cam_size, silent=silent)
 
 
-def get_reconstructed_scene(outdir, model, device, silent, image_size, filelist, schedule, niter, min_conf_thr,
-                            as_pointcloud, mask_sky, clean_depth, transparent_cams, cam_size,
-                            scenegraph_type, winsize, refid):
+def get_reconstructed_scene(outdir,
+                            model,
+                            filelist,
+                            device="cuda",
+                            silent=True,
+                            image_size=512,
+                            schedule="linear",
+                            niter=300,
+                            min_conf_thr=3,
+                            as_pointcloud=True,
+                            mask_sky=False,
+                            clean_depth=True,
+                            transparent_cams=False,
+                            cam_size=0.05,
+                            scenegraph_type="complete",
+                            winsize=1,
+                            refid=0):
     """
     from a list of images, run dust3r inference, global aligner.
     then run get_3D_model_from_scene
