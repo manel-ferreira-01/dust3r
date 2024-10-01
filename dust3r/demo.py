@@ -108,7 +108,7 @@ def _convert_scene_output_to_glb(outdir, imgs, pts3d, mask, focals, cams2world, 
 
 
 def get_3D_model_from_scene(outdir, silent, scene, min_conf_thr=3, as_pointcloud=False, mask_sky=False,
-                            clean_depth=False, transparent_cams=False, cam_size=0.05):
+                            clean_depth=False, transparent_cams=False, cam_size=0.05, gradio_mode=False):
     """
     extract 3D_model (glb file) from a reconstructed scene
     """
@@ -129,17 +129,19 @@ def get_3D_model_from_scene(outdir, silent, scene, min_conf_thr=3, as_pointcloud
     scene.min_conf_thr = float(scene.conf_trf(torch.tensor(min_conf_thr)))
     msk = to_numpy(scene.get_masks())
     
-    return pts3d, cams2world
-    #return _convert_scene_output_to_glb(outdir, rgbimg, pts3d, msk, focals, cams2world, as_pointcloud=as_pointcloud,
-    #                                    transparent_cams=transparent_cams, cam_size=cam_size, silent=silent)
+    if gradio_mode:
+        return _convert_scene_output_to_glb(outdir, rgbimg, pts3d, msk, focals, cams2world, as_pointcloud=as_pointcloud,
+                                        transparent_cams=transparent_cams, cam_size=cam_size, silent=silent)
+    else:
+        return pts3d, cams2world
 
 
 def get_reconstructed_scene(outdir,
                             model,
-                            filelist,
                             device="cuda",
                             silent=True,
                             image_size=512,
+                            filelist="./images_in", # TODO: fix this
                             schedule="linear",
                             niter=300,
                             min_conf_thr=3,
@@ -150,7 +152,8 @@ def get_reconstructed_scene(outdir,
                             cam_size=0.05,
                             scenegraph_type="complete",
                             winsize=1,
-                            refid=0):
+                            refid=0,
+                            gradio_mode=False):
     """
     from a list of images, run dust3r inference, global aligner.
     then run get_3D_model_from_scene
@@ -174,8 +177,12 @@ def get_reconstructed_scene(outdir,
     if mode == GlobalAlignerMode.PointCloudOptimizer:
         loss = scene.compute_global_alignment(init='mst', niter=niter, schedule=schedule, lr=lr)
 
-    pts3d, cams2world = get_3D_model_from_scene(outdir, silent, scene, min_conf_thr, as_pointcloud, mask_sky,
-                                      clean_depth, transparent_cams, cam_size)
+    if gradio_mode:
+        outfile = get_3D_model_from_scene(outdir, silent, scene, min_conf_thr, as_pointcloud, mask_sky,
+                                          clean_depth, transparent_cams, cam_size, gradio_mode)
+    else:
+        pts3d, cams2world = get_3D_model_from_scene(outdir, silent, scene, min_conf_thr, as_pointcloud, mask_sky,
+                                          clean_depth, transparent_cams, cam_size, gradio_mode)
 
     # also return rgb, depth and confidence imgs
     # depth is normalized with the max value for all images
@@ -195,8 +202,10 @@ def get_reconstructed_scene(outdir,
         imgs.append(rgb(depths[i]))
         imgs.append(rgb(confs[i]))
 
-    #return scene, outfile, imgs
-    return scene, pts3d, rgbimg, cams2world, confs
+    if gradio_mode:
+        return scene, outfile, imgs
+    else:
+        return scene, pts3d, rgbimg, cams2world, confs
 
 
 def set_scenegraph_options(inputfiles, winsize, refid, scenegraph_type):
@@ -260,7 +269,9 @@ def main_demo(tmpdirname, model, device, image_size, server_name, server_port, s
 
             outmodel = gradio.Model3D()
             outgallery = gradio.Gallery(label='rgb,depth,confidence', columns=3, height="100%")
-
+            
+            gradio_mode = gradio.Checkbox(value=True, label="Gradio mode")
+            
             # events
             scenegraph_type.change(set_scenegraph_options,
                                    inputs=[inputfiles, winsize, refid, scenegraph_type],
@@ -271,30 +282,30 @@ def main_demo(tmpdirname, model, device, image_size, server_name, server_port, s
             run_btn.click(fn=recon_fun,
                           inputs=[inputfiles, schedule, niter, min_conf_thr, as_pointcloud,
                                   mask_sky, clean_depth, transparent_cams, cam_size,
-                                  scenegraph_type, winsize, refid],
+                                  scenegraph_type, winsize, refid, gradio_mode],
                           outputs=[scene, outmodel, outgallery])
             min_conf_thr.release(fn=model_from_scene_fun,
                                  inputs=[scene, min_conf_thr, as_pointcloud, mask_sky,
-                                         clean_depth, transparent_cams, cam_size],
+                                         clean_depth, transparent_cams, cam_size, gradio_mode],
                                  outputs=outmodel)
             cam_size.change(fn=model_from_scene_fun,
                             inputs=[scene, min_conf_thr, as_pointcloud, mask_sky,
-                                    clean_depth, transparent_cams, cam_size],
+                                    clean_depth, transparent_cams, cam_size, gradio_mode],
                             outputs=outmodel)
             as_pointcloud.change(fn=model_from_scene_fun,
                                  inputs=[scene, min_conf_thr, as_pointcloud, mask_sky,
-                                         clean_depth, transparent_cams, cam_size],
+                                         clean_depth, transparent_cams, cam_size, gradio_mode],
                                  outputs=outmodel)
             mask_sky.change(fn=model_from_scene_fun,
                             inputs=[scene, min_conf_thr, as_pointcloud, mask_sky,
-                                    clean_depth, transparent_cams, cam_size],
+                                    clean_depth, transparent_cams, cam_size, gradio_mode],
                             outputs=outmodel)
             clean_depth.change(fn=model_from_scene_fun,
                                inputs=[scene, min_conf_thr, as_pointcloud, mask_sky,
-                                       clean_depth, transparent_cams, cam_size],
+                                       clean_depth, transparent_cams, cam_size, gradio_mode],
                                outputs=outmodel)
             transparent_cams.change(model_from_scene_fun,
                                     inputs=[scene, min_conf_thr, as_pointcloud, mask_sky,
-                                            clean_depth, transparent_cams, cam_size],
+                                            clean_depth, transparent_cams, cam_size, gradio_mode],
                                     outputs=outmodel)
     demo.launch(share=False, server_name=server_name, server_port=server_port)

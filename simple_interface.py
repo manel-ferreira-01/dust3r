@@ -32,7 +32,7 @@ filelist = "./images_in"
 model = AsymmetricCroCo3DStereo.from_pretrained("./docker/files/checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth").to(device)
 
 # Get the 3D model from the scene - one function, full pipeline
-scene, pts3d, rgbimg, cams2world, confs = get_reconstructed_scene(outdir, model, filelist, device=device)
+scene, pts3d, rgbimg, cams2world, confs = get_reconstructed_scene(outdir, model, filelist=filelist, device=device)
 
 
 # Save the output to a CSV file

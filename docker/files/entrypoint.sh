@@ -7,4 +7,4 @@ MODEL=${MODEL:-DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth}
 
 exec bash
 
-#exec python3 demo.py --weights "checkpoints/$MODEL" --device "$DEVICE" --local_network "$@"
+exec python3 demo.py --weights "checkpoints/$MODEL" --device "$DEVICE" --local_network "$@"
