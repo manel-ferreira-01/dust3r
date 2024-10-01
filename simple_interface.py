@@ -25,10 +25,13 @@ from dust3r.model import AsymmetricCroCo3DStereo
 
 
 outdir = "output"
-device = "cuda"
+device = "cpu"
+filelist = "./images_in"
+
+
+##TODO: make these the default ones inside the function
 silent = False
 image_size = 512
-filelist = "./images_in"
 schedule = "linear" # or "cosine"
 niter = 300 # number of iters
 min_conf_thr = 3
@@ -44,23 +47,22 @@ refid = 0
 # TODO: THIS NEEDS TO BE LAUNCHED AS SOON AS THE CONTAINER STARTS
 model = AsymmetricCroCo3DStereo.from_pretrained("./docker/files/checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth").to(device)
 
-
 # Get the 3D model from the scene - one function, full pipeline
 scene, pts3d, rgbimg, cams2world, confs = get_reconstructed_scene(outdir, model, device, silent, image_size, filelist, schedule, niter, min_conf_thr,
                             as_pointcloud, mask_sky, clean_depth, transparent_cams, cam_size,
                             scenegraph_type, winsize, refid)
-
-
 
 ## Save the output to a CSV file
 mask = to_numpy(scene.get_masks())
 pts3d = to_numpy(pts3d)
 
 pts = np.concatenate([p[m] for p, m in zip(pts3d, mask)])
-col = np.concatenate([p[m] for p, m in zip(rgbimg, mask)])
+color = np.concatenate([p[m] for p, m in zip(rgbimg, mask)])
 conf = np.concatenate([p[m] for p, m in zip(confs, mask)])
 
-np.savetxt("./output/out.csv",np.hstack((pts, col, conf)), delimiter=",")
+np.savetxt("./output/out.csv",np.hstack((pts, color, conf)), delimiter=",")
 
 for i in range(0,len(cams2world)):
     np.savetxt("./output/"+str(i)+".csv", to_numpy(cams2world[i]))
+
+
