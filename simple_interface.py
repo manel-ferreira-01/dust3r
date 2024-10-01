@@ -28,14 +28,14 @@ outdir = "output"
 device = "cpu"
 filelist = "./images_in"
 
-
 # TODO: THIS NEEDS TO BE LAUNCHED AS SOON AS THE CONTAINER STARTS
 model = AsymmetricCroCo3DStereo.from_pretrained("./docker/files/checkpoints/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth").to(device)
 
 # Get the 3D model from the scene - one function, full pipeline
 scene, pts3d, rgbimg, cams2world, confs = get_reconstructed_scene(outdir, model, filelist, device=device)
 
-## Save the output to a CSV file
+
+# Save the output to a CSV file
 mask = to_numpy(scene.get_masks())
 pts3d = to_numpy(pts3d)
 
@@ -44,7 +44,6 @@ color = np.concatenate([p[m] for p, m in zip(rgbimg, mask)])
 conf = np.concatenate([p[m] for p, m in zip(confs, mask)])
 
 np.savetxt("./output/out.csv",np.hstack((pts, color, conf)), delimiter=",")
-
 for i in range(0,len(cams2world)):
     np.savetxt("./output/"+str(i)+".csv", to_numpy(cams2world[i]))
 
