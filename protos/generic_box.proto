@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+/*
+ * Service that receives a data file (binary),loads the data (e.x. matlab format) and returns the a new file with processed data
+ * :param data: The data to process
+ * :returns: The transformed data
+ */
+service GenericBoxService {
+    rpc predict(Data) returns (Data);
+    rpc track(Data) returns (Data);
+    rpc plot(PlotInfo) returns (Data);
+}
+
+
+
+/*
+ * Message to represent the data file
+ * param data: bytes of the data file
+ *             encoded in some data format - .mat
+ */
+message Data {
+    bytes file = 1;
+}
+
+message PlotInfo {
+    Data img = 1;
+    Data file = 2;
+}
+
+message Empty {
+
+}
