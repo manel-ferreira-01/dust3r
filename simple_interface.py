@@ -25,7 +25,7 @@ from dust3r.model import AsymmetricCroCo3DStereo
 
 
 outdir = "output"
-device = "cpu"
+device = "cuda"
 filelist = "./images_in"
 
 # TODO: THIS NEEDS TO BE LAUNCHED AS SOON AS THE CONTAINER STARTS

@@ -270,7 +270,7 @@ def main_demo(tmpdirname, model, device, image_size, server_name, server_port, s
             outmodel = gradio.Model3D()
             outgallery = gradio.Gallery(label='rgb,depth,confidence', columns=3, height="100%")
             
-            gradio_mode = gradio.Checkbox(value=True, label="Gradio mode")
+            gradio_mode = gradio.Checkbox(value=True, label="Gradio mode", visible=False)
             
             # events
             scenegraph_type.change(set_scenegraph_options,
