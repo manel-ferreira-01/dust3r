@@ -4,7 +4,6 @@
 
 ``` bash
 cd docker/files
-
 docker build -f ./cpu.Dockerfile -t docker-dust3r .
 ```
   
