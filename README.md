@@ -2,31 +2,57 @@
 
 ## Compile image
 
-    cd docker
-    bash run.sh --with-cuda --model_name="DUSt3R_ViTLarge_BaseDecoder_512_dpt"
+``` bash
+cd docker/files
 
-  It will run the simple_interface.py, use all data inside the images_in folder and outputs data into output folder.
+docker build -f ./cpu.Dockerfile -t docker-dust3r .
+```
+  
+change for  ```cuda.dockerfile``` if using nvida+cuda
+
   
 
-## runs a pre-compiled image and it's up to the user know what should be ran
+## launch container from image
+
+  
+``` bash
+cd (dust3r path)
+xhost +local:* && docker run -it -v ./:/dust3r --network host \
+				 -e DISPLAY=$DISPLAY \
+				 --gpus all \
+				 docker-dust3r \
+				 bash
+```
+Pass gpus accordingly with your setup.
+
+## simple_interface.py
+Reads images from a folder and returns point clouds.
+
+### arguments:
+- -h, --help           show this help message and exit
+- --outdir OUTDIR      Output directory e.g. ./output
+- --device DEVICE      Device to use (cpu or cuda)
+- --filelist FILELIST  Path to the filelist containing input images, e.g ./images_in
 
 
-    cd (dust3r path)
-    docker run -it -v ./:/dust3r -p 8888:8888 --gpus all docker-dust3r-demo:latest bash
 ## Output Strucure
+
+  
 
 ```
 output
-│   out.csv
-│   1.csv    
-│   2.csv ...
+│ out.csv
+│ 1.csv
+│ 2.csv ...
 ```
+
 ### out.csv columns
+- 1-3 columns -> XYZ
 
- - 1-3 columns -> XYZ
- - 4-6 cols. -> RGB values normalized - min:0, max:1
- - 7 col -> confidence value 
- 
- ### %i.csv
-  - 4x4 homogenous transformation for each camara in scene
+- 4-6 cols. -> RGB values normalized - min:0, max:1
 
+- 7 col -> confidence value
+
+### %i.csv
+
+- 4x4 homogenous transformation for each camara in scene
