@@ -2,10 +2,13 @@
 
 ``` bash
 docker pull ghcr.io/manel-ferreira-01/dust3r:latest
+
 xhost +local:* && docker run -it -v ./images_in:/dust3r/images_in -v ./output:/dust3r/output --network host \
 				 -e DISPLAY=$DISPLAY \
 				 ghcr.io/manel-ferreira-01/dust3r:latest \
 				 bash
+
+python simple_interface.py
 ```
 
 ## Compile image
