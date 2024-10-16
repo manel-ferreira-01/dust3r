@@ -139,7 +139,7 @@ def get_3D_model_from_scene(outdir, silent, scene, min_conf_thr=3, as_pointcloud
 def get_reconstructed_scene(outdir,
                             model,
                             device="cuda",
-                            silent=True,
+                            silent=False,
                             image_size=512,
                             filelist="./images_in", # TODO: fix this
                             schedule="linear",
@@ -194,6 +194,8 @@ def get_reconstructed_scene(outdir,
     depths_max = max([d.max() for d in depths])
     depths = [d / depths_max for d in depths]
     confs_max = max([d.max() for d in confs])
+    confs_no_cmap = [d / confs_max for d in confs]
+    
     confs = [cmap(d / confs_max) for d in confs]
 
     imgs = []
@@ -205,7 +207,7 @@ def get_reconstructed_scene(outdir,
     if gradio_mode:
         return scene, outfile, imgs
     else:
-        return scene, pts3d, rgbimg, cams2world, confs
+        return scene, pts3d, rgbimg, cams2world, confs_no_cmap, depths
 
 
 def set_scenegraph_options(inputfiles, winsize, refid, scenegraph_type):
