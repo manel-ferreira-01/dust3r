@@ -32,7 +32,9 @@ RUN pip install opencv-python==4.8.0.74 pyvista numpy==1.26.4
 
 WORKDIR /dust3r
 
-COPY entrypoint.sh /entrypoint.sh
+COPY ./docker/files/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+COPY ./ /dust3r
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,15 +1,22 @@
-  
+## Download from ghcr.io repo
+
+``` bash
+docker pull ghcr.io/manel-ferreira-01/dust3r:latest
+xhost +local:* && docker run -it -v ./images_in:/dust3r/images_in -v ./output:/dust3r/output --network host \
+				 -e DISPLAY=$DISPLAY \
+				 ghcr.io/manel-ferreira-01/dust3r:latest \
+				 bash
+```
 
 ## Compile image
 
 ``` bash
-cd docker/files
+git clone --recursive https://github.com/naver/dust3r # or git submodule update --init
+cd dust3r/docker/files
 docker build -f ./cpu.Dockerfile -t docker-dust3r .
 ```
   
 change for  ```cuda.dockerfile``` if using nvida+cuda
-
-  
 
 ## launch container from image
 
