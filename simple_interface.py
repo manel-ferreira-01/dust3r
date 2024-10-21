@@ -54,8 +54,3 @@ data = {
     'cams_info': cell_array  # Saving the cell array as 'myCellArray'
 }
 savemat(outdir + '/cam_info.mat', data)
-
-
-""" np.savetxt(outdir+"/out.csv",np.hstack((pts, color, conf)), delimiter=",")
-for i in range(0,len(cams2world)):
-    np.savetxt(outdir+"/"+str(i)+".csv", to_numpy(cams2world[i])) """

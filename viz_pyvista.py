@@ -1,11 +1,15 @@
 import numpy as np
 import pyvista as pv
+from scipy.io import loadmat
         
-# Load the CSV file
-data = np.loadtxt('output/out.csv', delimiter=',')
+# Load the MAT file
+mat_data = loadmat('output/wrld_info.mat')
 
-cloud = pv.PolyData( data[:, :3] )
-cloud.point_data['colors'] = data[:, 3:6]
+points = mat_data['wrld']["xyz"][0][0]
+colors = mat_data['wrld']["color"][0][0]
+
+cloud = pv.PolyData(points)
+cloud.point_data['colors'] = colors
 
 # Create a plotter
 plotter = pv.Plotter()
