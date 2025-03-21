@@ -1,6 +1,8 @@
 version: '3.8'
 services:
   dust3r-demo:
+    stdin_open: true
+    tty: true
     build:
       context: ./files
       dockerfile: cuda.Dockerfile 
